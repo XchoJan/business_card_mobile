@@ -22,6 +22,9 @@ target 'BusinessCard' do
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
+  pod 'GoogleMaps'
+  rn_maps_path = '../node_modules/react-native-maps'
+  pod 'react-native-maps/Google', :path => rn_maps_path
 
   post_install do |installer|
     react_native_post_install(
