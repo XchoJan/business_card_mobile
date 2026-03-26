@@ -144,53 +144,55 @@ const ReplenishScreen = () => {
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           style={styles.modalContainer}
         >
-          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <View style={styles.modal}>
+          <View style={styles.modal}>
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
               <View style={styles.modalHandle} />
+            </TouchableWithoutFeedback>
 
-              <ScrollView
-                showsVerticalScrollIndicator={false}
-                keyboardShouldPersistTaps="handled"
-                contentContainerStyle={styles.modalContent}
-              >
-                <View>
+            <ScrollView
+              showsVerticalScrollIndicator={true}
+              keyboardShouldPersistTaps="handled"
+              contentContainerStyle={styles.modalContent}
+              nestedScrollEnabled={true}
+              style={styles.scrollView}
+            >
+              <View>
+                <AppInput
+                  placeholder={'Номер карты'}
+                  value={cardNumber}
+                  onChangeText={setCardNumber}
+                  keyboardType="numeric"
+                  maxLength={16}
+                />
+              </View>
+
+              <View style={styles.inputs}>
+                <View style={{ width: '48%' }}>
                   <AppInput
-                    placeholder={'Номер карты'}
-                    value={cardNumber}
-                    onChangeText={setCardNumber}
-                    keyboardType="numeric"
-                    maxLength={16}
+                    placeholder={'Срок действия'}
+                    value={expiry}
+                    onChangeText={setExpiry}
                   />
                 </View>
-
-                <View style={styles.inputs}>
-                  <View style={{ width: '48%' }}>
-                    <AppInput
-                      placeholder={'Срок действия'}
-                      value={expiry}
-                      onChangeText={setExpiry}
-                    />
-                  </View>
-                  <View style={{ width: '48%' }}>
-                    <AppInput
-                      placeholder={'CVV/CVC'}
-                      icon={<PassShowIcon fill={'#777'} />}
-                      passInput={true}
-                      maxLength={3}
-                      value={cvv}
-                      onChangeText={setCvv}
-                      keyboardType="numeric"
-                    />
-                    <Text style={fonts.b3}>3 цифры на обороте</Text>
-                  </View>
+                <View style={{ width: '48%' }}>
+                  <AppInput
+                    placeholder={'CVV/CVC'}
+                    icon={<PassShowIcon fill={'#777'} />}
+                    passInput={true}
+                    maxLength={3}
+                    value={cvv}
+                    onChangeText={setCvv}
+                    keyboardType="numeric"
+                  />
+                  <Text style={fonts.b3}>3 цифры на обороте</Text>
                 </View>
+              </View>
 
-                <View style={{ marginTop: 24, marginBottom: 24 }}>
-                  <AppBtn onPress={handleAddCard} text={'Добавить карту'} />
-                </View>
-              </ScrollView>
-            </View>
-          </TouchableWithoutFeedback>
+              <View style={{ marginTop: 24, marginBottom: 24 }}>
+                <AppBtn onPress={handleAddCard} text={'Добавить карту'} />
+              </View>
+            </ScrollView>
+          </View>
         </KeyboardAvoidingView>
       </Modal>
       <HideTabBar />
@@ -253,15 +255,15 @@ const createStyles = (
     },
     modalContainer: {
       maxHeight: '90%',
+      flex: 1,
     },
     modal: {
       width: '100%',
       backgroundColor: '#fff',
       borderTopRightRadius: 16,
       borderTopLeftRadius: 16,
-      paddingHorizontal: 16,
       paddingTop: 12,
-      paddingBottom: Platform.OS === 'ios' ? 34 : 24,
+      flex: 1,
     },
     modalHandle: {
       width: 40,
@@ -271,8 +273,13 @@ const createStyles = (
       alignSelf: 'center',
       marginBottom: 16,
     },
+    scrollView: {
+      flex: 1,
+    },
     modalContent: {
-      paddingBottom: 16,
+      paddingHorizontal: 16,
+      paddingBottom: Platform.OS === 'ios' ? 60 : 50,
+      flexGrow: 1,
     },
     inputs: {
       flexDirection: 'row',

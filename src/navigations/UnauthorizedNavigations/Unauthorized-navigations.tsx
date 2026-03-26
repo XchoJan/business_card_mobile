@@ -7,6 +7,7 @@ import RegistrationScreen from "../../screens/UnauthedScreens/RegistrationScreen
 import PinCodeScreen from '../../screens/UnauthedScreens/PinCodeScreen/pin-code-screen.tsx';
 import CreatePassScreen from '../../screens/UnauthedScreens/CreatePassScreen/create-pass-screen.tsx';
 import ResetPassScreen from '../../screens/UnauthedScreens/ResetPassScreen/reset-pass-screen.tsx';
+import CompanyDataScreen from '../../screens/UnauthedScreens/CompanyDataScreen/company-data-screen.tsx';
 
 const UnauthorizedNavigations = () => {
     return (
@@ -21,6 +22,7 @@ const UnauthorizedNavigations = () => {
             <Stack.Screen name="PinCodeScreen" component={PinCodeScreen} />
             <Stack.Screen name="CreatePassScreen" component={CreatePassScreen} />
             <Stack.Screen name="ResetPassScreen" component={ResetPassScreen} />
+            <Stack.Screen name="CompanyDataScreen" component={CompanyDataScreen} />
         </Stack.Navigator>
     );
 };

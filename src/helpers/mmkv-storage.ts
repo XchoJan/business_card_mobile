@@ -1,16 +1,15 @@
-import MMKVStorage from "react-native-mmkv-storage";
-const MMKV = new MMKVStorage.Loader().initialize();
+import { storage } from './key-value-repository';
 
 export const MmkvRepository = {
     getTheme: async () => {
-        const theme = await MMKV.getStringAsync("theme");
-        return theme || "light";
+        const theme = storage.getString('theme');
+        return theme || 'light';
     },
     getThemeSync: () => {
-        const theme = MMKV.getString("theme");
-        return theme || "light";
+        const theme = storage.getString('theme');
+        return theme || 'light';
     },
     setTheme: async (theme: string) => {
-        await MMKV.setStringAsync("theme", theme);
+        storage.set('theme', theme);
     },
 };

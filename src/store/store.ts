@@ -14,12 +14,14 @@ import themeReducer from './features/theme/themeSlice.ts';
 import tabBarVisibleReducer from './features/booleans/tabBarVisible.ts'
 import toastVisibleReducer from './features/booleans/toastVisible.ts'
 import selectedRefuelingReducer from './features/selectedRefueling/selectedRefueling.ts'
+import technicsReducer from './features/technics/technicsSlice.ts'
 const reducers = {
     token: tokenReducer,
     theme: themeReducer,
     tabBarVisible: tabBarVisibleReducer,
     toastVisible: toastVisibleReducer,
-    selectedRefueling: selectedRefuelingReducer
+    selectedRefueling: selectedRefuelingReducer,
+    technics: technicsReducer,
 };
 
 const combinedReducer = combineReducers<typeof reducers>(reducers);

@@ -14,6 +14,7 @@ let Tab = createBottomTabNavigator();
 import ProfileNavigator from '../TabNavigators/profile-navigator.tsx';
 import MainNavigator from '../TabNavigators/main-navigator.tsx';
 import WalletNavigator from '../TabNavigators/wallet-navigator.tsx';
+import TechnicsNavigator from '../TabNavigators/technics-navigator.tsx';
 import { useSelector } from 'react-redux';
 import PassHideIcon from '../../assets/icons/PassHideIcon';
 import PassShowIcon from '../../assets/icons/PassShowIcon';
@@ -21,6 +22,7 @@ import ProfileIcon from '../../assets/icons/ProfileIcon';
 import useStyles, { ColorsEnum } from '../../hooks/useStyles.ts';
 import MapIcon from '../../assets/icons/MapIcon';
 import WalletIcon from '../../assets/icons/WalletIcon';
+import TechnicIcon from '../../assets/icons/TechnicIcon';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const TabIconWithBackground: React.FC<{
@@ -129,6 +131,27 @@ const AuthorizedNavigations = () => {
         }}
         name="MainNavigator"
         component={MainNavigator}
+      />
+
+      <Tab.Screen
+        options={{
+          tabBarIcon: ({ focused }: any) => (
+            <TabIconWithBackground
+              title={'Техники'}
+              focused={focused}
+              icon={
+                focused ? (
+                  <TechnicIcon fill={iconFill} />
+                ) : (
+                  <TechnicIcon fill={iconFill} />
+                )
+              }
+            />
+          ),
+          tabBarShowLabel: false,
+        }}
+        name="TechnicsNavigator"
+        component={TechnicsNavigator}
       />
 
       <Tab.Screen

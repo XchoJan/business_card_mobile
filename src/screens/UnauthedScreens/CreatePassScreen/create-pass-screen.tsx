@@ -7,10 +7,12 @@ import AppBtn from '../../../components/AppBtn.tsx';
 import BackIcon from '../../../assets/icons/BackIcon';
 import PassHideIcon from '../../../assets/icons/PassHideIcon';
 import PassShowIcon from '../../../assets/icons/PassShowIcon';
+import { useNavigation } from '@react-navigation/core';
 
 const CreatePassScreen = () => {
   const { styles, theme, fonts } = useStyles(createStyles);
   let iconFill = theme === 'light' ? '#777777' : '#CDCDCD'
+  const navigation = useNavigation<any>();
 
   const [showPass1, setShowPass1] = useState(false);
   const [showPass2, setShowPass2] = useState(false);
@@ -32,7 +34,10 @@ const CreatePassScreen = () => {
             passInput={!showPass2}
             onPressIcon={()=> setShowPass2(!showPass2)}
           />
-          <AppBtn text={'Сохранить'} />
+          <AppBtn
+            onPress={() => navigation.navigate('CompanyDataScreen')}
+            text={'Сохранить'}
+          />
         </View>
       </ScrollView>
     </AuthContainer>

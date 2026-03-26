@@ -9,7 +9,7 @@ import {
 } from 'react-native-confirmation-code-field';
 import useStyles, { ColorsEnum } from '../hooks/useStyles.ts';
 
-const CELL_COUNT = 4;
+const CELL_COUNT = 6;
 
 const autoComplete = Platform.select<TextInputProps['autoComplete']>({
   android: 'sms-otp',
@@ -56,16 +56,17 @@ export default PinInputs;
 
 const createStyles = (getColor: (light: ColorsEnum, dark: ColorsEnum) => string) =>
   StyleSheet.create({
-    root: {flex: 1, padding: 20},
+    root: {flex: 1, padding: 16},
     title: {textAlign: 'center', fontSize: 30},
     codeFieldRoot: {
       marginTop: 20,
+      gap: 6
     },
     cell: {
-      width: 56,
-      height: 56,
+      width: 44,
+      height: 44,
       lineHeight: 38,
-      fontSize: 24,
+      fontSize: 18,
       borderWidth: 0,
       borderColor: '#00000030',
       color: getColor('black', 'white'), // text color
@@ -74,7 +75,7 @@ const createStyles = (getColor: (light: ColorsEnum, dark: ColorsEnum) => string)
       alignItems: 'center',
       justifyContent: 'center',
       textAlign: 'center',
-      paddingTop: 8
+      paddingTop: 4
     },
     focusCell: {
       borderColor: '#000',
