@@ -17,6 +17,7 @@ import BackIcon from '../../../assets/icons/BackIcon';
 import PaddingContainer from '../../../components/PaddingContainer.tsx';
 import PassHideIcon from '../../../assets/icons/PassHideIcon';
 import PassShowIcon from '../../../assets/icons/PassShowIcon';
+import Api from '../../../Api';
 
 const CreateDriverScreen = () => {
   const { styles, theme, fonts } = useStyles(createStyles);
@@ -25,22 +26,37 @@ const CreateDriverScreen = () => {
   let iconFill = theme === 'light' ? '#000' : '#CDCDCD';
   const [showPass, setShowPass] = useState(false);
 
-  const [phoneNumber, setPhoneNumber] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
 
-  const handleSave = () => {
-    if (!phoneNumber.trim() || !password.trim()) return;
-
-    const newDriver = {
-      id: Date.now().toString(),
-      phoneNumber: phoneNumber.trim(),
+  const handleSave = async () => {
+    const body = {
+      first_name: firstName.trim(),
+      last_name: lastName.trim(),
+      email: email.trim(),
       password: password.trim(),
-      name: name.trim() || undefined,
+      client_vehicle_id: null,
     };
 
-    dispatch(addDriver(newDriver));
-    navigation.goBack();
+    if (!body.first_name || !body.last_name || !body.email || !body.password) return;
+
+    try {
+      const response = await Api.createDriver(body);
+      const created = response?.data?.data || {};
+
+      dispatch(
+        addDriver({
+          id: String(created?.id || Date.now()),
+          ...body,
+          ...created,
+        }),
+      );
+      navigation.goBack();
+    } catch (e: any) {
+      console.log(e?.response?.data ?? e?.message ?? e);
+    }
   };
 
   return (
@@ -61,10 +77,26 @@ const CreateDriverScreen = () => {
         <PaddingContainer>
           <View style={styles.inputsContainer}>
             <AppInput
-              placeholder={'Номер телефона'}
-              value={phoneNumber}
-              onChangeText={setPhoneNumber}
-              keyboardType="phone-pad"
+              placeholder={'Имя'}
+              value={firstName}
+              onChangeText={setFirstName}
+            />
+
+            <View style={{ marginBottom: 12 }} />
+
+            <AppInput
+              placeholder={'Фамилия'}
+              value={lastName}
+              onChangeText={setLastName}
+            />
+
+            <View style={{ marginBottom: 12 }} />
+
+            <AppInput
+              placeholder={'Почта'}
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
             />
 
             <View style={{ marginBottom: 12 }} />
@@ -82,14 +114,6 @@ const CreateDriverScreen = () => {
                 )
               }
               onPressIcon={() => setShowPass(!showPass)}
-            />
-
-            <View style={{ marginBottom: 12 }} />
-
-            <AppInput
-              placeholder={'Имя (необязательно)'}
-              value={name}
-              onChangeText={setName}
             />
 
             <View style={{ marginTop: 24, marginBottom: 40 }}>

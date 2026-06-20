@@ -1,5 +1,12 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import React, { useCallback, useRef, useState } from 'react';
+import {
+  ActivityIndicator,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import useStyles, { ColorsEnum } from '../hooks/useStyles';
 import BottomSheet, {
   BottomSheetView,
@@ -21,11 +28,13 @@ interface BottomSheetWrapperProps {
   index: number;
   onChange?: (index: number) => void;
   onClose?: any;
+  loading?: boolean;
 }
 
 interface Fuel {
   type: string;
-  price: number;
+  price: number | null;
+  currency?: string;
 }
 
 interface SelectedItem {
@@ -38,6 +47,9 @@ interface SelectedItem {
   schedule: string;
   services: string[];
   description: string;
+  pumps?: any[];
+  payment_methods?: any[];
+  loading?: boolean;
 }
 
 export interface RootState {
@@ -50,6 +62,7 @@ const BottomSheetWrapper = ({
   index,
   onChange,
   onClose,
+  loading = false,
 }: BottomSheetWrapperProps) => {
   const { styles, fonts } = useStyles(createStyles);
   const selectedItem = useSelector(
@@ -92,7 +105,16 @@ const BottomSheetWrapper = ({
         }
       }}
     >
-      <BottomSheetScrollView  style={styles.contentContainer}>
+      <BottomSheetScrollView style={styles.contentContainer}>
+        {loading ? (
+          <View style={styles.loader}>
+            <ActivityIndicator size="large" color="#4A7CB8" />
+            <Text style={[fonts.b2, { marginTop: 12, color: '#777' }]}>
+              Загрузка данных АЗС...
+            </Text>
+          </View>
+        ) : (
+          <>
         <View style={[styles.marginTop24]}>
           <Text style={[fonts.H1, { textAlign: 'center', color: '#000' }]}>
             {selectedItem?.name}
@@ -100,7 +122,7 @@ const BottomSheetWrapper = ({
         </View>
         <View style={[styles.marginTop12]}>
           <Text style={[fonts.b2, { textAlign: 'center', color: '#000' }]}>
-            {selectedItem?.address}
+            {selectedItem?.address || 'Адрес не указан'}
           </Text>
         </View>
 
@@ -134,76 +156,107 @@ const BottomSheetWrapper = ({
 
         <View style={styles.line} />
 
-        <View style={styles.container}>
-          {selectedItem?.fuels?.map((item, index) => (
-            <View
-              key={index}
-              style={[
-                styles.row,
-                index === 0 && styles.firstRow,
-                index === selectedItem.fuels.length - 1 && styles.lastRow,
-              ]}
-            >
-              <Text style={[styles.type, { color: '#000' }]}>{item.type}</Text>
-              <Text style={[styles.price, { color: '#000' }]}>
-                {item.price} ֏
-              </Text>
-            </View>
-          ))}
-        </View>
+        {selectedItem?.fuels?.length ? (
+          <View style={styles.container}>
+            {selectedItem.fuels.map((item, fuelIndex) => (
+              <View
+                key={fuelIndex}
+                style={[
+                  styles.row,
+                  fuelIndex === 0 && styles.firstRow,
+                  fuelIndex === selectedItem.fuels.length - 1 && styles.lastRow,
+                ]}
+              >
+                <Text style={[styles.type, { color: '#000' }]}>{item.type}</Text>
+                <Text style={[styles.price, { color: '#000' }]}>
+                  {item.price} {item.currency ?? '֏'}
+                </Text>
+              </View>
+            ))}
+          </View>
+        ) : (
+          <Text style={[fonts.b2, { color: '#777', marginBottom: 12 }]}>
+            Цены на топливо временно недоступны
+          </Text>
+        )}
 
         <View style={styles.line} />
 
-        <View style={{ width: '100%', marginBottom: 24 }}>
-          <Text style={[fonts.H2, { textAlign: 'left', color: '#000' }]}>
-            Дополнительно об АЗС
-          </Text>
+        {!!selectedItem?.description && (
+          <View style={{ width: '100%', marginBottom: 24 }}>
+            <Text style={[fonts.H2, { textAlign: 'left', color: '#000' }]}>
+              Дополнительно об АЗС
+            </Text>
 
-          <Text style={[fonts.b2, styles.b2Color, { color: '#777777' }]}>
-            {selectedItem?.description}
-          </Text>
-        </View>
+            <Text style={[fonts.b2, styles.b2Color, { color: '#777777' }]}>
+              {selectedItem.description}
+            </Text>
+          </View>
+        )}
 
-        <View style={{ width: '100%', marginBottom: 24 }}>
-          <Text style={[fonts.H2, { textAlign: 'left', color: '#000' }]}>
-            График работы
-          </Text>
+        {!!selectedItem?.schedule && (
+          <View style={{ width: '100%', marginBottom: 24 }}>
+            <Text style={[fonts.H2, { textAlign: 'left', color: '#000' }]}>
+              График работы
+            </Text>
 
-          <Text style={[fonts.b2, styles.b2Color, { color: '#777777' }]}>
-            {selectedItem?.schedule}
-          </Text>
-        </View>
+            <Text style={[fonts.b2, styles.b2Color, { color: '#777777' }]}>
+              {selectedItem.schedule}
+            </Text>
+          </View>
+        )}
 
-        <View style={{ width: '100%', marginBottom: 24 }}>
-          <Text style={[fonts.H2, { textAlign: 'left', color: '#000' }]}>
-            Сервисы и услуги
-          </Text>
+        {!!selectedItem?.services?.length && (
+          <View style={{ width: '100%', marginBottom: 24 }}>
+            <Text style={[fonts.H2, { textAlign: 'left', color: '#000' }]}>
+              Сервисы и услуги
+            </Text>
 
-          {selectedItem?.services?.map((service: string, index: number) => (
-            <View
-              key={index}
-              style={{
-                flexDirection: 'row',
-                alignItems: 'flex-start',
-                marginBottom: 4,
-              }}
-            >
-              <Text
+            {selectedItem.services.map((service: string, serviceIndex: number) => (
+              <View
+                key={serviceIndex}
                 style={{
-                  color: '#000',
-                  fontSize: 16,
-                  marginRight: 6,
-                  top: 8,
+                  flexDirection: 'row',
+                  alignItems: 'flex-start',
+                  marginBottom: 4,
                 }}
               >
-                •
+                <Text
+                  style={{
+                    color: '#000',
+                    fontSize: 16,
+                    marginRight: 6,
+                    top: 8,
+                  }}
+                >
+                  •
+                </Text>
+                <Text style={[fonts.b2, styles.b2Color, { color: '#777777' }]}>
+                  {service}
+                </Text>
+              </View>
+            ))}
+          </View>
+        )}
+
+        {!!selectedItem?.payment_methods?.length && (
+          <View style={{ width: '100%', marginBottom: 24 }}>
+            <Text style={[fonts.H2, { textAlign: 'left', color: '#000' }]}>
+              Способы оплаты
+            </Text>
+
+            {selectedItem.payment_methods.map((method: any, methodIndex: number) => (
+              <Text
+                key={methodIndex}
+                style={[fonts.b2, styles.b2Color, { color: '#777777' }]}
+              >
+                • {method?.name ?? method?.code}
               </Text>
-              <Text style={[fonts.b2, styles.b2Color, { color: '#777777' }]}>
-                {service}
-              </Text>
-            </View>
-          ))}
-        </View>
+            ))}
+          </View>
+        )}
+          </>
+        )}
       </BottomSheetScrollView>
 
       <CreateRoadModal
@@ -290,5 +343,11 @@ const createStyles = (
     b2Color: {
       color: getColor('grey', 'white'),
       marginTop: 12,
+    },
+    loader: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingTop: 48,
+      paddingBottom: 32,
     },
   });

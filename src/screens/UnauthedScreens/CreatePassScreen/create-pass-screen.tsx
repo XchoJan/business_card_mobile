@@ -17,6 +17,18 @@ const CreatePassScreen = () => {
   const [showPass1, setShowPass1] = useState(false);
   const [showPass2, setShowPass2] = useState(false);
 
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+
+  const handleCheckPass = ()=> {
+    if (password !== confirmPassword) {
+      console.log(11111);
+    }else{
+      console.log(222222);
+      navigation.navigate('CompanyDataScreen', {password: password})
+    }
+  }
+
   return (
     <AuthContainer showBack title={'Придумайте пароль'}>
       <ScrollView>
@@ -26,6 +38,8 @@ const CreatePassScreen = () => {
             icon={!showPass1 ? <PassHideIcon fill={iconFill}/> : <PassShowIcon fill={iconFill}/>}
             passInput={!showPass1}
             onPressIcon={()=> setShowPass1(!showPass1)}
+            value={password}
+            onChangeText={setPassword}
 
           />
           <AppInput
@@ -33,9 +47,11 @@ const CreatePassScreen = () => {
             icon={!showPass2 ? <PassHideIcon fill={iconFill}/> : <PassShowIcon fill={iconFill}/>}
             passInput={!showPass2}
             onPressIcon={()=> setShowPass2(!showPass2)}
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
           />
           <AppBtn
-            onPress={() => navigation.navigate('CompanyDataScreen')}
+            onPress={handleCheckPass}
             text={'Сохранить'}
           />
         </View>

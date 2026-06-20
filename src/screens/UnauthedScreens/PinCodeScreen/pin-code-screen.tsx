@@ -7,11 +7,14 @@ import { useNavigation } from '@react-navigation/core';
 import Api from '../../../Api';
 import { appConfig } from '../../../core/constants/app-config';
 
-const PinCodeScreen = () => {
+const PinCodeScreen = ({route}: any) => {
   const { styles, theme, fonts } = useStyles(createStyles);
   const navigation = useNavigation<any>()
   const [value, setValue] = useState('');
   const [deviceId, setDeviceId] = useState('');
+  const target = route?.params.value;
+  const type = route?.params?.type;
+  console.log(type, 'type');
 
   useEffect(() => {
     appConfig.deviceId
@@ -43,14 +46,14 @@ const PinCodeScreen = () => {
     }
   }
 
-  console.log(value, 'VALUE');
-
   return (
     <AuthContainer
       showBack
       title={'Введите код'}
       description={
-       'Мы отправили смс с кодом на \n ваш номер телефона +374 77 777 777'
+      type === 'email' ? `Мы отправили смс с кодом на \n вашу почту ${target}`
+        :
+        `Мы отправили смс с кодом на \n ваш номер телефона ${target}`
       }
     >
       <View style={{paddingHorizontal: 58}}>

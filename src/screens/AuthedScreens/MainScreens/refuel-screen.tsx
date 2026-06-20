@@ -15,8 +15,24 @@ const RefuelScreen = () => {
     (store: RootState) => store?.selectedRefueling?.refueling,
   );
 
-  const arr = [1, 2, 3, 4, 5, 6, 7];
-  const [selectedPump, setSelectedPump] = useState<number | null>(null);
+  const pumps = selectedItem?.pumps?.length
+    ? selectedItem.pumps.filter((p: any) => p?.active !== false)
+    : [];
+  const [selectedPump, setSelectedPump] = useState<number | string | null>(null);
+
+  const mapRegion = selectedItem?.latitude && selectedItem?.longitude
+    ? {
+        latitude: Number(selectedItem.latitude),
+        longitude: Number(selectedItem.longitude),
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
+      }
+    : {
+        latitude: 55.75,
+        longitude: 37.62,
+        latitudeDelta: 0.1,
+        longitudeDelta: 0.1,
+      };
 
   return (
     <RefuelContainer
@@ -33,18 +49,13 @@ const RefuelScreen = () => {
             style={{ flex: 1 }}
             provider={PROVIDER_GOOGLE}
             showsUserLocation={true}
-            initialRegion={{
-              latitude: 40.1772,
-              longitude: 44.5035,
-              latitudeDelta: 0.1,
-              longitudeDelta: 0.1,
-            }}
+            initialRegion={mapRegion}
           >
             <Marker
-              key={Math.random().toString()}
+              key={String(selectedItem?.id ?? 'station')}
               coordinate={{
-                latitude: selectedItem?.latitude,
-                longitude: selectedItem?.longitude,
+                latitude: mapRegion.latitude,
+                longitude: mapRegion.longitude,
               }}
               style={{ overflow: 'hidden' }}
             >
@@ -66,23 +77,30 @@ const RefuelScreen = () => {
           </Text>
 
           <View style={styles.grid}>
-            {arr.map(item => {
-              const isActive = selectedPump === item;
-              return (
-                <TouchableOpacity
-                  key={item}
-                  onPress={() => setSelectedPump(item)}
-                  activeOpacity={0.8}
-                  style={[styles.cell, isActive && styles.activeCell]}
-                >
-                  <Text
-                    style={[styles.cellText, isActive && styles.activeCellText]}
+            {pumps.length ? (
+              pumps.map((pump: any) => {
+                const pumpKey = pump.id ?? pump.uuid;
+                const isActive = selectedPump === pumpKey;
+                return (
+                  <TouchableOpacity
+                    key={String(pumpKey)}
+                    onPress={() => setSelectedPump(pumpKey)}
+                    activeOpacity={0.8}
+                    style={[styles.cell, isActive && styles.activeCell]}
                   >
-                    {item}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
+                    <Text
+                      style={[styles.cellText, isActive && styles.activeCellText]}
+                    >
+                      {pump.name ?? pumpKey}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })
+            ) : (
+              <Text style={[fonts.b2, { color: '#777' }]}>
+                Колонки для этой АЗС не найдены
+              </Text>
+            )}
           </View>
         </View>
       </View>

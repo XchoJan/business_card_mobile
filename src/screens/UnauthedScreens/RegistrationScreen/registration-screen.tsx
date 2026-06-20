@@ -17,14 +17,16 @@ import Api from '../../../Api';
 import { API_URL } from '../../../Api/config';
 import { appConfig, deviceName } from '../../../core/constants/app-config';
 import { fetchText } from 'react-native-svg';
+import { useDispatch } from 'react-redux';
+import { setEmailToReducer } from '../../../store/features/registration/emailReducer.ts';
 
 const RegistrationScreen = () => {
+  const dispatch = useDispatch()
   const { styles, theme, fonts } = useStyles(createStyles);
   const navigation = useNavigation<any>();
   const [activeSelect, setActiveSelect] = useState(1);
   const [email, setEmail] = useState('');
   const [deviceId, setDeviceId] = useState('');
-
   useEffect(() => {
     appConfig.deviceId
       .then(id => {
@@ -38,18 +40,19 @@ const RegistrationScreen = () => {
   }, []);
 
   const handleSendEmailOpt = async () => {
+    const data = {
+      device_id: deviceId,
+      target: email,
+    };
+
     try {
-      const resolvedDeviceId = deviceId || (await appConfig.deviceId);
-      const trimmedEmail = (email || '').trim();
-      if (!resolvedDeviceId || !trimmedEmail) {
-        console.warn('deviceId or email is empty', { deviceId: resolvedDeviceId, email: trimmedEmail });
-        return;
-      }
-      const response = await Api.emailSendOpt(resolvedDeviceId, trimmedEmail);
-      console.log(response, 'response from send OPT IN MAIL');
-      navigation.navigate('PinCodeScreen');
+      const response = await Api.registrationByEmail(data);
+      console.log(response.data, 'response');
+      dispatch(setEmailToReducer(email))
+      navigation.navigate('PinCodeScreen', { value: email, type: 'email' });
+
     } catch (e: any) {
-      console.log(e?.response?.data ?? e?.message ?? e);
+      console.log(e?.response?.data, 'error from reg');
     }
   };
 
@@ -98,7 +101,7 @@ const RegistrationScreen = () => {
             </View>
           )}
           <AppBtn
-            onPress={handleSendEmailOpt}
+            onPress={activeSelect === 1 ? null : handleSendEmailOpt}
             text={'Получить код'}
           />
         </PaddingContainer>

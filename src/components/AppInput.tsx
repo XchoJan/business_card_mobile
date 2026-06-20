@@ -11,7 +11,8 @@ interface inputProps {
   passInput?: boolean;
   label?: string;
   maxLength?: number;
-  keyboardType?: any
+  keyboardType?: any;
+  autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
 }
 
 const AppInput = ({
@@ -23,7 +24,8 @@ const AppInput = ({
   passInput,
   label,
   maxLength,
-                    keyboardType
+  keyboardType,
+  autoCapitalize,
 }: inputProps) => {
   const { styles, theme, fonts } = useStyles(createStyles);
   const [isFocused, setIsFocused] = useState(false);
@@ -43,6 +45,7 @@ const AppInput = ({
           placeholderTextColor={theme === 'light' ? '#777777' : '#FFFFFF'}
           maxLength={maxLength}
           keyboardType={keyboardType}
+          autoCapitalize={autoCapitalize}
         />
         <Pressable onPress={onPressIcon}>{icon}</Pressable>
       </View>

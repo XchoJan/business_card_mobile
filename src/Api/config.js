@@ -3,7 +3,7 @@ import { appConfig, deviceName } from '../core/constants/app-config';
 
 import {TokensRepository} from '../helpers/tokens-repository';
 
-export const API_URL = 'http://api.test.fuelsolutions.group/api/'; // PROD
+export const API_URL = 'http://api.test.fuelsolutions.group/api/v1/'; // PROD
 
 const DeviceName = deviceName
 
@@ -33,9 +33,18 @@ api.interceptors.request.use(
             return params;
         }
 
+        const url = String(params?.url || '');
+        const isPublicAuthEndpoint =
+          url.includes('login') ||
+          url.includes('register') ||
+          url.includes('otp/');
+
         const accessToken = TokensRepository.getAccessToken();
-        if (accessToken) {
-            params.headers.Authorization = 'Bearer ' + accessToken;
+        if (accessToken && !isPublicAuthEndpoint) {
+          params.headers.Authorization = 'Bearer ' + accessToken;
+        } else {
+          // на всякий случай, чтобы не отправлять случайный Authorization на публичные эндпоинты
+          delete params.headers.Authorization;
         }
         params.headers['device-id'] = await appConfig.deviceId;
         params.headers['device-name'] = DeviceName;

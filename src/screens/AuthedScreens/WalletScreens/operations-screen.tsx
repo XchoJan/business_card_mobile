@@ -38,8 +38,8 @@ const OperationsScreen = () => {
   >('Заправка');
 
   const types = [
-    { title: 'Заправка', value: '268 948,54 ֏' },
-    { title: 'Пополнение', value: '270 000,00 ֏' },
+    { title: 'Заправка', value: '0 ֏' },
+    { title: 'Пополнение', value: '0 ֏' },
   ];
 
   const [isVisibleFilter, setIsVisibleFilter] = useState(false);
@@ -188,13 +188,16 @@ const OperationsScreen = () => {
 
       <View style={styles.wrapper}>
         <Text style={[fonts.b2, styles.dayTitle]}>Вчера</Text>
-        <FlatList
-          data={walletData}
-          keyExtractor={item => item.id.toString()}
-          renderItem={renderItem}
-          ItemSeparatorComponent={() => <View style={styles.separator} />}
-          showsVerticalScrollIndicator={false}
-        />
+        {/*<FlatList*/}
+        {/*  data={walletData}*/}
+        {/*  keyExtractor={item => item.id.toString()}*/}
+        {/*  renderItem={renderItem}*/}
+        {/*  ItemSeparatorComponent={() => <View style={styles.separator} />}*/}
+        {/*  showsVerticalScrollIndicator={false}*/}
+        {/*/>*/}
+        <Text style={{fontSize: 24, textAlign: 'center', top: '35%'}}>
+          Список пока пуст
+        </Text>
       </View>
       <HideTabBar />
 

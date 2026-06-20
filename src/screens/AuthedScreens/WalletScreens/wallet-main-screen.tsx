@@ -82,13 +82,17 @@ const WalletMainScreen = () => {
           </View>
         </View>
 
-        <FlatList
-          data={walletData}
-          keyExtractor={item => item.id.toString()}
-          renderItem={renderItem}
-          ItemSeparatorComponent={() => <View style={styles.separator} />}
-          showsVerticalScrollIndicator={false}
-        />
+        {/*<FlatList*/}
+        {/*  data={walletData}*/}
+        {/*  keyExtractor={item => item.id.toString()}*/}
+        {/*  renderItem={renderItem}*/}
+        {/*  ItemSeparatorComponent={() => <View style={styles.separator} />}*/}
+        {/*  showsVerticalScrollIndicator={false}*/}
+        {/*/>*/}
+
+        <Text style={{fontSize: 24, textAlign: 'center', top: '35%'}}>
+          У вас пока нет операций
+        </Text>
       </View>
     </View>
   );

@@ -1377,6 +1377,18 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
+"@mapbox/geo-viewport@^0.4.1":
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/@mapbox/geo-viewport/-/geo-viewport-0.4.1.tgz#a184c0b161975858a2e855a1e333e66af342964b"
+  integrity sha512-5g6eM3EOSl7+0p0VY+vHWEYjUlNzof936VKHTi/NuJVABjbYe8D2NAVJ0qt5C9Np4glUlhKFepgAgQ0OEybrjQ==
+  dependencies:
+    "@mapbox/sphericalmercator" "~1.1.0"
+
+"@mapbox/sphericalmercator@~1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@mapbox/sphericalmercator/-/sphericalmercator-1.1.0.tgz#f3b1af042620716a1289fc41e1e97f610823aefe"
+  integrity sha512-pEsfZyG4OMThlfFQbCte4gegvHUjxXCjz0KZ4Xk8NdOYTQBLflj6U8PL05RPAiuRAMAQNUUKJuL6qYZ5Y4kAWA==
+
 "@nicolo-ribaudo/eslint-scope-5-internals@5.1.1-v1":
   version "5.1.1-v1"
   resolved "https://registry.yarnpkg.com/@nicolo-ribaudo/eslint-scope-5-internals/-/eslint-scope-5-internals-5.1.1-v1.tgz#dbf733a965ca47b1973177dc0bb6c889edcfb129"
@@ -4777,6 +4789,11 @@ jsonify@^0.0.1:
     object.assign "^4.1.4"
     object.values "^1.1.6"
 
+kdbush@^4.0.2:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/kdbush/-/kdbush-4.1.0.tgz#d504bc0447a59be4fb75533a5c25e316b3ed8859"
+  integrity sha512-e9vurzrXJQrFX6ckpHP3bvj5l+9CnYzkxDNnNQ1h2QTqdWsUAJgXiKdGNcOa1EY85dU8KbQ+z/FdQdB7P+9yfQ==
+
 keyv@^4.5.3:
   version "4.5.4"
   resolved "https://registry.yarnpkg.com/keyv/-/keyv-4.5.4.tgz#a879a99e29452f942439f2a405e3af8b31d4de93"
@@ -5729,6 +5746,14 @@ react-native-is-edge-to-edge@^1.2.1:
   resolved "https://registry.yarnpkg.com/react-native-is-edge-to-edge/-/react-native-is-edge-to-edge-1.2.1.tgz#64e10851abd9d176cbf2b40562f751622bde3358"
   integrity sha512-FLbPWl/MyYQWz+KwqOZsSyj2JmLKglHatd3xLZWskXOpRaio4LfEDEz8E/A6uD8QoTHW6Aobw1jbEwK7KMgR7Q==
 
+react-native-map-clustering@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/react-native-map-clustering/-/react-native-map-clustering-4.0.0.tgz#830ae8baa1b6d39da7892f965ad6ea854a6a52d0"
+  integrity sha512-+YNh4frhZIHQReURxYGHNy9MJ50GYWpW6psoBEjvTG6vb33eYu00GmO8Pu/9VwMB1YL5lOxZ9+sJClJ8Mz1Bxw==
+  dependencies:
+    "@mapbox/geo-viewport" "^0.4.1"
+    supercluster "^8.0.0"
+
 react-native-maps@^1.26.18:
   version "1.26.18"
   resolved "https://registry.yarnpkg.com/react-native-maps/-/react-native-maps-1.26.18.tgz#1bb412d236a1a187c93f5e63a8d912d8d5beca6d"
@@ -6462,6 +6487,13 @@ strnum@^1.1.1:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/strnum/-/strnum-1.1.2.tgz#57bca4fbaa6f271081715dbc9ed7cee5493e28e4"
   integrity sha512-vrN+B7DBIoTTZjnPNewwhx6cBA/H+IS7rfW68n7XxC1y7uoiGQBxaKzqucGUgavX15dJgiGztLJ8vxuEzwqBdA==
+
+supercluster@^8.0.0:
+  version "8.0.1"
+  resolved "https://registry.yarnpkg.com/supercluster/-/supercluster-8.0.1.tgz#9946ba123538e9e9ab15de472531f604e7372df5"
+  integrity sha512-IiOea5kJ9iqzD2t7QJq/cREyLHTtSmUT6gQsweojg9WH2sYJqZK9SswTu6jrscO6D1G5v5vYZ9ru/eq85lXeZQ==
+  dependencies:
+    kdbush "^4.0.2"
 
 supports-color@^7.1.0:
   version "7.2.0"

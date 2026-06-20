@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import useStyles, { ColorsEnum } from '../../../hooks/useStyles.ts';
 import { ScrollView, StyleSheet, View, Text, Platform, KeyboardAvoidingView } from 'react-native';
 import AuthContainer from '../../../components/AuthContainer.tsx';
@@ -6,14 +6,19 @@ import AppInput from '../../../components/AppInput.tsx';
 import AppBtn from '../../../components/AppBtn.tsx';
 import PaddingContainer from '../../../components/PaddingContainer.tsx';
 import { useNavigation } from '@react-navigation/core';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setToken } from '../../../store/features/token/tokenSlice.ts';
+import { appConfig } from '../../../core/constants/app-config';
+import Api from '../../../Api';
+import { TokensRepository } from '../../../helpers/tokens-repository.ts';
 
-const CompanyDataScreen = () => {
+const CompanyDataScreen = ({route}: any) => {
   const { styles, theme, fonts } = useStyles(createStyles);
   const navigation = useNavigation<any>();
   const dispatch = useDispatch();
-
+  const password = route?.params?.password;
+  const [name, setName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [inn, setInn] = useState('');
   const [companyName, setCompanyName] = useState('');
   const [bik, setBik] = useState('');
@@ -21,16 +26,63 @@ const CompanyDataScreen = () => {
   const [correspondentAccount, setCorrespondentAccount] = useState('');
   const [bankName, setBankName] = useState('');
   const [address, setAddress] = useState('');
+  const emailFromReducer = useSelector((store: any) => store.emailOrPhone.emailOrPhone);
+  const [email, setEmail] = useState(emailFromReducer || '');
+  const [deviceId, setDeviceId] = useState('');
 
-  const handleContinueAsIndividual = () => {
-    // Устанавливаем моковый токен как при входе
-    dispatch(setToken('KJASHDKAJSD'));
-  };
+  useEffect(() => {
+    appConfig.deviceId
+      .then(id => {
+        if (id) {
+          setDeviceId(id);
+        }
+      })
+      .catch(error => {
+        console.log('Failed to get deviceId', error);
+      });
+  }, []);
 
-  const handleSaveCompanyData = () => {
-    // Здесь можно добавить валидацию и сохранение данных
-    // Пока просто устанавливаем токен
-    dispatch(setToken('KJASHDKAJSD'));
+  const handleSaveCompanyData = async (client_type: string) => {
+    const resolvedDeviceId = deviceId || (await appConfig.deviceId);
+    const trimmedEmail = (email || '').trim();
+    const trimmedName = (name || '').trim();
+    const trimmedLastName = (lastName || '').trim();
+    const trimmedInn = (inn || '').trim();
+    const trimmedCompanyName = (companyName || '').trim();
+
+    const dataCompany = {
+      name: trimmedName,
+      last_name: trimmedLastName,
+      device_id: resolvedDeviceId,
+      alpha2: 'AM',
+      email: trimmedEmail,
+      password: password,
+      client_type: 'company',
+      reg_number: trimmedInn,
+      company_name: trimmedCompanyName,
+    }
+
+    const dataIndividual = {
+      device_id: resolvedDeviceId,
+      alpha2: 'AM',
+      email: trimmedEmail,
+      password: password,
+      client_type: client_type,
+      name: trimmedName,
+      last_name: trimmedLastName,
+    }
+
+    console.log(dataIndividual);
+
+    try {
+      const response = await Api.createUser(client_type === 'individual'
+        ? dataIndividual : dataCompany);
+      console.log(response.data.data.tokens.access_token, 'Response save company');
+      TokensRepository.setAccessToken(response.data.data.tokens.access_token)
+      dispatch(setToken(response.data.data.tokens.access_token));
+    }catch (e: any){
+      console.log(e.response, 'Error save company');
+    }
   };
 
   return (
@@ -47,6 +99,31 @@ const CompanyDataScreen = () => {
         >
           <PaddingContainer>
             <View style={styles.inputsContainer}>
+              <AppInput
+                placeholder={'Почта'}
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+              />
+
+              <View style={{ marginBottom: 12 }} />
+
+              <AppInput
+                placeholder={'Имя'}
+                value={name}
+                onChangeText={setName}
+              />
+
+              <View style={{ marginBottom: 12 }} />
+
+              <AppInput
+                placeholder={'Фамилия'}
+                value={lastName}
+                onChangeText={setLastName}
+              />
+
+              <View style={{ marginBottom: 12 }} />
+
               <AppInput
                 placeholder={'ИНН'}
                 value={inn}
@@ -111,7 +188,7 @@ const CompanyDataScreen = () => {
 
               <View style={{ marginTop: 24 }}>
                 <AppBtn
-                  onPress={handleSaveCompanyData}
+                  onPress={() => handleSaveCompanyData('company')}
                   text={'Сохранить'}
                 />
               </View>
@@ -124,7 +201,7 @@ const CompanyDataScreen = () => {
 
               <View style={{ marginTop: 12, marginBottom: 40 }}>
                 <AppBtn
-                  onPress={handleContinueAsIndividual}
+                  onPress={()=> handleSaveCompanyData('individual')}
                   text={'Продолжить как физ лицо'}
                 />
               </View>

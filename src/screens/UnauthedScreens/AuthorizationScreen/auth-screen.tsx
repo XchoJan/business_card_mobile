@@ -19,6 +19,9 @@ import PassShowIcon from '../../../assets/icons/PassShowIcon';
 import PrivacyPolicy from '../../../components/PrivacyPolicy.tsx';
 import { setToken } from '../../../store/features/token/tokenSlice.ts';
 import { useDispatch } from 'react-redux';
+import Api from '../../../Api';
+import { TokensRepository } from '../../../helpers/tokens-repository.ts';
+import { setToastVisible } from '../../../store/features/booleans/toastVisible.ts';
 
 const AuthScreen = () => {
   const { styles, theme, fonts } = useStyles(createStyles);
@@ -27,9 +30,30 @@ const AuthScreen = () => {
   const dispatch = useDispatch()
   const [activeSelect, setActiveSelect] = useState(1);
   const [visible,setVisible] = useState(false);
-
-
+  const [email, setEmail] = useState('');
+  const [emailPassword, setEmailPassword] = useState('');
   const [showPass, setShowPass] = useState(false);
+
+  const handleEmailAuth = async () => {
+    const data = {
+      email: email,
+      password: emailPassword,
+    }
+    try {
+      const response = await Api.login(data)
+      console.log(response.data.data.tokens.access_token, "email auth R");
+      dispatch(setToken(response.data.data.tokens.access_token));
+      TokensRepository.setAccessToken(response.data.data.tokens.access_token);
+    }catch (e: any){
+      console.log(e?.response?.data?.message, 'Error from email auth')
+     dispatch(setToastVisible({
+       isVisible: true,
+       type: 'error',
+       text: 'Неверные данные',
+     }))
+    }
+  }
+
   return (
     <AuthContainer
       title={'Авторизация'}
@@ -76,6 +100,8 @@ const AuthScreen = () => {
             <View>
               <AppInput
                 placeholder={'Почта'}
+                value={email}
+                onChangeText={setEmail}
               />
 
               <View style={{ marginBottom: 12 }} />
@@ -85,6 +111,8 @@ const AuthScreen = () => {
                 icon={!showPass ? <PassHideIcon fill={iconFill}/> : <PassShowIcon fill={iconFill}/>}
                 passInput={!showPass}
                 onPressIcon={()=> setShowPass(!showPass)}
+                onChangeText={setEmailPassword}
+                value={emailPassword}
               />
             </View>
           )}
@@ -93,7 +121,7 @@ const AuthScreen = () => {
             <Text style={fonts.b1}>Забыли пароль?</Text>
           </Pressable>
 
-          <AppBtn onPress={()=> dispatch(setToken('KJASHDKAJSD'))} text={'Войти'} />
+          <AppBtn onPress={()=> handleEmailAuth().then()} text={'Войти'} />
 
           <View>
             <Text style={[fonts.b3, { textAlign: 'center', marginTop: 24 }]}>

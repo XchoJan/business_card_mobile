@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -9,18 +9,78 @@ import {
   Platform,
 } from 'react-native';
 import useStyles, { ColorsEnum } from '../../../hooks/useStyles.ts';
-import { useNavigation } from '@react-navigation/core';
-import { useSelector } from 'react-redux';
+import { useFocusEffect, useNavigation } from '@react-navigation/core';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../store/store.ts';
-import { Technic, Driver } from '../../../store/features/technics/technicsSlice.ts';
+import { Driver, setDrivers, setTechnics, Technic } from '../../../store/features/technics/technicsSlice.ts';
+import Api from '../../../Api';
 
 const TechnicsMainScreen = () => {
   const { styles, theme, fonts } = useStyles(createStyles);
   const navigation = useNavigation<any>();
+  const dispatch = useDispatch();
   const [activeTab, setActiveTab] = useState<'technics' | 'drivers'>('technics');
 
   const technics = useSelector((state: RootState) => state.technics?.technics || []);
   const drivers = useSelector((state: RootState) => state.technics?.drivers || []);
+
+  const loadVehicles = useCallback(async () => {
+    try {
+      const response = await Api.getVehicles();
+      const list = response?.data?.data ?? response?.data ?? [];
+      const vehicles = Array.isArray(list) ? list : list?.vehicles ?? [];
+
+      const mapped: Technic[] = (vehicles || []).map((v: any) => ({
+        id: String(v?.id ?? v?.vehicle_id ?? v?.uuid ?? v?.vehicle_vin_unique_number ?? Date.now()),
+        vehicle_model: v?.vehicle_model,
+        vehicle_fuel_capacity: v?.vehicle_fuel_capacity,
+        vehicle_vin_unique_number: v?.vehicle_vin_unique_number,
+        ...v,
+      }));
+
+      dispatch(setTechnics(mapped));
+    } catch (e: any) {
+      console.log(e?.response?.data ?? e?.message ?? e);
+    }
+  }, [dispatch]);
+
+  const loadDrivers = useCallback(async () => {
+    try {
+      const response = await Api.getDrivers();
+      const list = response?.data?.data ?? response?.data ?? [];
+      const driversList = Array.isArray(list) ? list : list?.drivers ?? [];
+
+      const mapped: Driver[] = (driversList || []).map((d: any) => ({
+        id: String(d?.id ?? d?.driver_id ?? d?.uuid ?? d?.email ?? Date.now()),
+        first_name: d?.first_name ?? '',
+        last_name: d?.last_name ?? '',
+        email: d?.email ?? '',
+        password: d?.password ?? '',
+        client_vehicle_id: d?.client_vehicle_id ?? null,
+        ...d,
+      }));
+
+      dispatch(setDrivers(mapped));
+    } catch (e: any) {
+      console.log(e?.response?.data ?? e?.message ?? e);
+    }
+  }, [dispatch]);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadVehicles().then();
+      loadDrivers().then();
+    }, [loadVehicles]),
+  );
+
+  // при переключении вкладки — догружаем актуальные данные
+  useEffect(() => {
+    if (activeTab === 'technics') {
+      loadVehicles().then();
+    } else {
+      loadDrivers().then();
+    }
+  }, [activeTab, loadDrivers, loadVehicles]);
 
   const handleAddPress = () => {
     if (activeTab === 'technics') {
@@ -31,22 +91,42 @@ const TechnicsMainScreen = () => {
   };
 
   const renderTechnicItem = ({ item }: { item: Technic }) => (
-    <View style={styles.item}>
+    <Pressable
+      onPress={() => navigation.navigate('VehicleDetailScreen', { vehicle: item })}
+      style={styles.item}
+    >
       <View style={styles.itemContent}>
-        <Text style={[fonts.b1, { marginBottom: 4 }]}>Номер: {item.carNumber}</Text>
-        {item.model && <Text style={[fonts.b2, { color: '#777' }]}>Модель: {item.model}</Text>}
-        {item.brand && <Text style={[fonts.b2, { color: '#777' }]}>Марка: {item.brand}</Text>}
+        {item.vehicle_model && (
+          <Text style={[fonts.b1, { marginBottom: 4 }]}>
+            Модель: {item.vehicle_model}
+          </Text>
+        )}
+        {item.vehicle_fuel_capacity !== undefined && item.vehicle_fuel_capacity !== null && (
+          <Text style={[fonts.b2, { color: '#777' }]}>
+            Объем бака: {item.vehicle_fuel_capacity}
+          </Text>
+        )}
+        {item.vehicle_vin_unique_number && (
+          <Text style={[fonts.b2, { color: '#777' }]}>
+            VIN: {item.vehicle_vin_unique_number}
+          </Text>
+        )}
       </View>
-    </View>
+    </Pressable>
   );
 
   const renderDriverItem = ({ item }: { item: Driver }) => (
-    <View style={styles.item}>
+    <Pressable
+      onPress={() => navigation.navigate('DriverDetailScreen', { driver: item })}
+      style={styles.item}
+    >
       <View style={styles.itemContent}>
-        <Text style={[fonts.b1, { marginBottom: 4 }]}>Телефон: {item.phoneNumber}</Text>
-        {item.name && <Text style={[fonts.b2, { color: '#777' }]}>Имя: {item.name}</Text>}
+        <Text style={[fonts.b1, { marginBottom: 4 }]}>
+          {item.first_name} {item.last_name}
+        </Text>
+        <Text style={[fonts.b2, { color: '#777' }]}>Email: {item.email}</Text>
       </View>
-    </View>
+    </Pressable>
   );
 
   return (

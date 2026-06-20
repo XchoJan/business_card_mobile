@@ -2,19 +2,17 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export interface Technic {
   id: string;
-  carNumber: string;
-  model?: string;
-  brand?: string;
-  year?: string;
-  vin?: string;
+  // транспорт приходит с бэка, поэтому конкретные поля могут отличаться
   [key: string]: any;
 }
 
 export interface Driver {
   id: string;
-  phoneNumber: string;
+  first_name: string;
+  last_name: string;
+  email: string;
   password: string;
-  name?: string;
+  client_vehicle_id: string | null;
   [key: string]: any;
 }
 
@@ -32,6 +30,12 @@ const technicsSlice = createSlice({
   name: 'technics',
   initialState,
   reducers: {
+    setTechnics: (state, action: PayloadAction<Technic[]>) => {
+      state.technics = action.payload;
+    },
+    setDrivers: (state, action: PayloadAction<Driver[]>) => {
+      state.drivers = action.payload;
+    },
     addTechnic: (state, action: PayloadAction<Technic>) => {
       state.technics.push(action.payload);
     },
@@ -60,6 +64,8 @@ const technicsSlice = createSlice({
 });
 
 export const {
+  setTechnics,
+  setDrivers,
   addTechnic,
   updateTechnic,
   deleteTechnic,

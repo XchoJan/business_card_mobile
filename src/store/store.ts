@@ -15,6 +15,8 @@ import tabBarVisibleReducer from './features/booleans/tabBarVisible.ts'
 import toastVisibleReducer from './features/booleans/toastVisible.ts'
 import selectedRefuelingReducer from './features/selectedRefueling/selectedRefueling.ts'
 import technicsReducer from './features/technics/technicsSlice.ts'
+import emailOrPhoneReducer from './features/registration/emailReducer.ts'
+import userReducer from './features/user/userSlice.ts'
 const reducers = {
     token: tokenReducer,
     theme: themeReducer,
@@ -22,6 +24,8 @@ const reducers = {
     toastVisible: toastVisibleReducer,
     selectedRefueling: selectedRefuelingReducer,
     technics: technicsReducer,
+    emailOrPhone: emailOrPhoneReducer,
+    user: userReducer,
 };
 
 const combinedReducer = combineReducers<typeof reducers>(reducers);

@@ -3,6 +3,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import TechnicsMainScreen from '../../screens/AuthedScreens/TechnicsScreens/technics-main-screen.tsx';
 import CreateTechnicScreen from '../../screens/AuthedScreens/TechnicsScreens/create-technic-screen.tsx';
 import CreateDriverScreen from '../../screens/AuthedScreens/TechnicsScreens/create-driver-screen.tsx';
+import VehicleDetailScreen from '../../screens/AuthedScreens/TechnicsScreens/vehicle-detail-screen.tsx';
+import DriverDetailScreen from '../../screens/AuthedScreens/TechnicsScreens/driver-detail-screen.tsx';
 
 let Stack = createStackNavigator();
 
@@ -33,6 +35,8 @@ export default function TechnicsNavigator() {
       <Stack.Screen name="TechnicsMainScreen" component={TechnicsMainScreen} />
       <Stack.Screen name="CreateTechnicScreen" component={CreateTechnicScreen} />
       <Stack.Screen name="CreateDriverScreen" component={CreateDriverScreen} />
+      <Stack.Screen name="VehicleDetailScreen" component={VehicleDetailScreen} />
+      <Stack.Screen name="DriverDetailScreen" component={DriverDetailScreen} />
     </Stack.Navigator>
   );
 }

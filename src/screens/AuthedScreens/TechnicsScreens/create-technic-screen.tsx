@@ -15,6 +15,7 @@ import AppInput from '../../../components/AppInput.tsx';
 import AppBtn from '../../../components/AppBtn.tsx';
 import BackIcon from '../../../assets/icons/BackIcon';
 import PaddingContainer from '../../../components/PaddingContainer.tsx';
+import Api from '../../../Api';
 
 const CreateTechnicScreen = () => {
   const { styles, theme, fonts } = useStyles(createStyles);
@@ -22,26 +23,36 @@ const CreateTechnicScreen = () => {
   const dispatch = useDispatch();
   let iconFill = theme === 'light' ? '#000' : '#CDCDCD';
 
-  const [carNumber, setCarNumber] = useState('');
-  const [model, setModel] = useState('');
-  const [brand, setBrand] = useState('');
-  const [year, setYear] = useState('');
-  const [vin, setVin] = useState('');
+  const [vehicleModel, setVehicleModel] = useState('');
+  const [vehicleFuelCapacity, setVehicleFuelCapacity] = useState('');
+  const [vehicleVinUniqueNumber, setVehicleVinUniqueNumber] = useState('');
 
-  const handleSave = () => {
-    if (!carNumber.trim()) return;
-
-    const newTechnic = {
-      id: Date.now().toString(),
-      carNumber: carNumber.trim(),
-      model: model.trim() || undefined,
-      brand: brand.trim() || undefined,
-      year: year.trim() || undefined,
-      vin: vin.trim() || undefined,
+  const handleSave = async () => {
+    const body = {
+      vehicle_model: vehicleModel.trim(),
+      vehicle_fuel_capacity: Number(vehicleFuelCapacity),
+      vehicle_vin_unique_number: vehicleVinUniqueNumber.trim(),
     };
 
-    dispatch(addTechnic(newTechnic));
-    navigation.goBack();
+    if (!body.vehicle_model || !body.vehicle_vin_unique_number || !Number.isFinite(body.vehicle_fuel_capacity)) {
+      return;
+    }
+
+    try {
+      const response = await Api.createVehicle(body);
+      const created = response?.data?.data || {};
+
+      dispatch(
+        addTechnic({
+          id: String(created?.id || Date.now()),
+          ...body,
+          ...created,
+        }),
+      );
+      navigation.goBack();
+    } catch (e: any) {
+      console.log(e?.response?.data ?? e?.message ?? e);
+    }
   };
 
   return (
@@ -62,43 +73,26 @@ const CreateTechnicScreen = () => {
         <PaddingContainer>
           <View style={styles.inputsContainer}>
             <AppInput
-              placeholder={'Номер машины'}
-              value={carNumber}
-              onChangeText={setCarNumber}
+              placeholder={'Модель транспорта'}
+              value={vehicleModel}
+              onChangeText={setVehicleModel}
             />
 
             <View style={{ marginBottom: 12 }} />
 
             <AppInput
-              placeholder={'Марка'}
-              value={brand}
-              onChangeText={setBrand}
-            />
-
-            <View style={{ marginBottom: 12 }} />
-
-            <AppInput
-              placeholder={'Модель'}
-              value={model}
-              onChangeText={setModel}
-            />
-
-            <View style={{ marginBottom: 12 }} />
-
-            <AppInput
-              placeholder={'Год выпуска'}
-              value={year}
-              onChangeText={setYear}
+              placeholder={'Объем бака'}
+              value={vehicleFuelCapacity}
+              onChangeText={setVehicleFuelCapacity}
               keyboardType="numeric"
-              maxLength={4}
             />
 
             <View style={{ marginBottom: 12 }} />
 
             <AppInput
               placeholder={'VIN номер'}
-              value={vin}
-              onChangeText={setVin}
+              value={vehicleVinUniqueNumber}
+              onChangeText={setVehicleVinUniqueNumber}
             />
 
             <View style={{ marginTop: 24, marginBottom: 40 }}>

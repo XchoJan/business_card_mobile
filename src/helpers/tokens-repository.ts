@@ -26,6 +26,10 @@ export class TokensRepository {
     return KeyValueRepository.getItem<string>(REFRESH_TOKEN);
   }
 
+  public static removeRefreshToken(): void {
+    return KeyValueRepository.removeItem(REFRESH_TOKEN);
+  }
+
   public static setSelectedCity(city: string): void {
     KeyValueRepository.setItem(SELECTED_CITY, JSON.stringify(city));
   }
@@ -36,6 +40,10 @@ export class TokensRepository {
 
   public static removeSelectedCity(): void {
     KeyValueRepository.removeItem(SELECTED_CITY);
+  }
+
+  public static clearAll(): void {
+    KeyValueRepository.clearAll();
   }
 
 }

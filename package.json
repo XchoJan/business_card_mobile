@@ -30,6 +30,7 @@
     "react-native-device-info": "^15.0.2",
     "react-native-gesture-handler": "^2.29.0",
     "react-native-international-phone-number": "^0.11.0",
+    "react-native-map-clustering": "^4.0.0",
     "react-native-maps": "^1.26.18",
     "react-native-mmkv": "^4.2.0",
     "react-native-modal": "^14.0.0-rc.1",

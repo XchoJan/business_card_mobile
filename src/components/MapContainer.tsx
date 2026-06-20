@@ -1,46 +1,75 @@
 // MapContainer.tsx
-import React, { useState } from 'react';
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import React, { useRef, useState } from 'react';
+import ClusteredMapView from 'react-native-map-clustering';
+import { Marker, PROVIDER_GOOGLE, Region } from 'react-native-maps';
 import { View, Text, StyleSheet } from 'react-native';
-import { gasStations } from '../theme/variables';
 import { blackWhiteMap } from '../theme/blackWhiteMap';
-import { useDispatch } from 'react-redux';
-import { setSelectedRefueling } from '../store/features/selectedRefueling/selectedRefueling.ts';
+import type { MapStationPin } from '../helpers/stations';
+
+const MARKER_COLOR = '#4A7CB8';
 
 const MapContainer = ({
+  stations = [],
   onMarkerPress,
+  onRegionChangeComplete,
 }: {
-  onMarkerPress: () => void;
+  stations?: MapStationPin[];
+  onMarkerPress: (station: MapStationPin) => void;
+  onRegionChangeComplete?: (region: Region) => void;
 }) => {
-  const [selectedId, setSelectedId] = useState<number | null>(null);
-  const dispatch = useDispatch();
+  const [selectedId, setSelectedId] = useState<number | string | null>(null);
+  const mapRef = useRef<any>(null);
+  const regionTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const initialRegion = {
+    latitude: 55.75,
+    longitude: 37.62,
+    latitudeDelta: 8,
+    longitudeDelta: 8,
+  };
+
+  const handleRegionChangeComplete = (region: Region) => {
+    if (!onRegionChangeComplete) return;
+
+    if (regionTimer.current) {
+      clearTimeout(regionTimer.current);
+    }
+
+    regionTimer.current = setTimeout(() => {
+      onRegionChangeComplete(region);
+    }, 500);
+  };
+
   return (
-    <MapView
+    <ClusteredMapView
+      ref={mapRef}
       customMapStyle={blackWhiteMap}
       style={{ flex: 1 }}
       provider={PROVIDER_GOOGLE}
       showsUserLocation={true}
-      initialRegion={{
-        latitude: 40.1772,
-        longitude: 44.5035,
-        latitudeDelta: 0.1,
-        longitudeDelta: 0.1,
-      }}
+      initialRegion={initialRegion}
+      clusterColor={MARKER_COLOR}
+      clusterTextColor="#FFFFFF"
+      radius={56}
+      minPoints={2}
+      animationEnabled
+      tracksViewChanges={false}
+      onRegionChangeComplete={handleRegionChangeComplete}
     >
-      {gasStations?.map(station => {
+      {stations.map(station => {
         const isSelected = selectedId === station.id;
 
         return (
           <Marker
-            key={station?.id}
+            key={String(station.id)}
             coordinate={{
-              latitude: station?.latitude,
-              longitude: station?.longitude,
+              latitude: station.latitude,
+              longitude: station.longitude,
             }}
+            tracksViewChanges={false}
             onPress={() => {
               setSelectedId(station.id);
-              dispatch(setSelectedRefueling(station));
-              onMarkerPress();
+              onMarkerPress(station);
             }}
           >
             {isSelected ? (
@@ -56,7 +85,7 @@ const MapContainer = ({
           </Marker>
         );
       })}
-    </MapView>
+    </ClusteredMapView>
   );
 };
 
@@ -79,13 +108,13 @@ const styles = StyleSheet.create({
     width: 14,
     height: 14,
     borderRadius: 7,
-    backgroundColor: '#4A7CB8',
+    backgroundColor: MARKER_COLOR,
     marginRight: 6,
   },
   xz: {
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: '#4A7CB8',
+    backgroundColor: MARKER_COLOR,
   },
 });
